@@ -1,0 +1,71 @@
+/* Query 1 */
+
+SELECT e.FirstName || ' ' || e.LastName  AS Employee_name,sum(inv.total) AS total_amount
+FROM Employee e
+JOIN Customer c
+ON e.EmployeeId = c.SupportRepId
+JOIN Invoice AS inv
+ON inv.CustomerId = c.CustomerId 
+GROUP BY 1
+ORDER BY 1;
+
+/* Query 2 */
+
+SELECT ar.name AS 'Artist Name', SUM (inl.UnitPrice * Quantity)AS 'Total amount'
+FROM Artist AS ar
+JOIN Album AS al
+ON al.ArtistId = ar.ArtistId
+JOIN Track AS tr
+ON tr.AlbumId = al.AlbumId
+JOIN InvoiceLine AS inl
+ON inl.TrackId = tr.TrackId
+GROUP BY 1
+ORDER By 2 DESC
+LIMIT 10;
+
+/* Query 3 */
+
+WITH t1 AS (
+SELECT ar.ArtistId,ar.Name AS artist_name,SUM (inl.UnitPrice * inl.Quantity) AS total_price 
+FROM Artist ar
+JOIN Album al
+on al.ArtistId = ar.ArtistId
+JOIN Track tr
+on tr.AlbumId = al.AlbumId
+JOIN InvoiceLine inl
+on inl.TrackId = tr.TrackId
+GROUP By 1,2
+ORDER By 3 DEsc
+limit 1)
+
+SELECT c.FirstName || '  ' || c.LastName AS customer_name,SUM (inl.UnitPrice * inl.Quantity) AS amount_spent 
+FROM Artist ar
+JOIN Album al
+on al.ArtistId = ar.ArtistId
+JOIN Track tr
+on tr.AlbumId = al.AlbumId
+JOIN InvoiceLine inl
+on inl.TrackId = tr.TrackId
+JOIN Invoice as Inv
+on inv.InvoiceId = inl.InvoiceId
+JOIN Customer AS c
+ON c.CustomerId = inv.CustomerId
+WHERE ar.Name = (SELECT artist_name FROM t1)
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 8;
+
+/* Query 4 */
+
+SELECT tr.name || '_'  || ar.name  AS track_artist, SUM (inl.UnitPrice * Quantity)AS amount_spent
+FROM Artist AS ar
+JOIN Album AS al
+ON al.ArtistId = ar.ArtistId
+JOIN Track AS tr
+ON tr.AlbumId = al.AlbumId
+JOIN InvoiceLine AS inl
+ON inl.TrackId = tr.TrackId
+GROUP BY 1
+ORDER By 2 DESC
+LIMIT 8;
+
